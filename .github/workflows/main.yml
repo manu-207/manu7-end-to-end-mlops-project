@@ -28,12 +28,10 @@ jobs:
           pip install --upgrade pip
           pip install dvc[s3] mlflow -r requirements.txt
 
-      - name: Configure DVC Remote
+      - name: Verify DVC Remote
         run: |
-          dvc remote add -f dagshub s3://dvc
-          dvc remote modify dagshub endpointurl https://dagshub.com/b.manmadharao207/manu7-end-to-end-mlops-project.s3
-          dvc remote default dagshub
           dvc remote list
+          dvc remote default
 
       - name: DVC Pull
         run: dvc pull -v
