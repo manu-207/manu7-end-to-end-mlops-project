@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DAGSHUB_USERNAME: b.manmadharao207
-      DAGSHUB_TOKEN: c3c8546a06461326870a6557917cf6ac27848641
+      AWS_ACCESS_KEY_ID: b.manmadharao207
+      AWS_SECRET_ACCESS_KEY: c3c8546a06461326870a6557917cf6ac27848641
+      AWS_DEFAULT_REGION: us-east-1
 
     steps:
       - name: Checkout repository
@@ -27,13 +28,10 @@ jobs:
           pip install --upgrade pip
           pip install dvc[s3] mlflow -r requirements.txt
 
-      - name: Configure DVC Remote (DAGsHub)
+      - name: Configure DVC Remote
         run: |
-          dvc remote remove dagshub || true
           dvc remote add -f dagshub s3://dvc
           dvc remote modify dagshub endpointurl https://dagshub.com/b.manmadharao207/manu7-end-to-end-mlops-project.s3
-          dvc remote modify dagshub --local access_key_id $DAGSHUB_USERNAME
-          dvc remote modify dagshub --local secret_access_key $DAGSHUB_TOKEN
           dvc remote default dagshub
           dvc remote list
 
@@ -45,11 +43,3 @@ jobs:
 
       - name: DVC Push
         run: dvc push
-
-      - name: Commit dvc.lock
-        run: |
-          git config --global user.email "mlops-test@github.com"
-          git config --global user.name "mlops-test"
-          git add dvc.lock
-          git commit -m "Test run: DVC + DAGsHub" || echo "No changes"
-          git push origin main
